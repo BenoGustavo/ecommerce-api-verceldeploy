@@ -1,4 +1,7 @@
-export const options = {
+import { Options } from 'swagger-jsdoc';
+import path from "path";
+
+export const options: Options = {
   definition: {
     openapi: "3.0.0",
     info: {
@@ -41,5 +44,5 @@ export const options = {
       },
     ],
   },
-  apis: ["./src/**/*.router.ts"],
+  apis: [path.join(__dirname, "../**/*.router.js")],
 };

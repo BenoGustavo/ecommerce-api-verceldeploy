@@ -3,8 +3,9 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+import path from "path";
 import prismaErrorHandler from "../prisma/middleware/errorHandler";
-import runServer from "./server";
+import morgan from "morgan";
 
 // Importing Routers
 import usersRouter from "./user/router/user.router";
@@ -19,29 +20,33 @@ import reportRouter from "./report/router/report.router";
 
 // Importing Swagger Options
 import { options } from "./utils/swagger-options";
-import morgan from "morgan";
 
-const specs = swaggerJsdoc(options);
 const app = express();
-const port = Number(process.env.APPLICATION_PORT) || Number(3000);
-const isDev = Boolean(process.env.APPLICATION_DEV_MODE) === true;
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////Config middlewares and app stuff////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const port = Number(process.env.APPLICATION_PORT) || 3000;
+const isDev = process.env.APPLICATION_DEV_MODE === 'true';
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+const specs = swaggerJsdoc(options);
+
+// Serve static files for Swagger UI
+app.use('/api-docs', express.static(path.join(__dirname, 'node_modules', 'swagger-ui-dist')));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(specs, {
+    customCssUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css",
+  })
+);
+
 app.use(prismaErrorHandler);
+
 if (isDev) {
   app.use(morgan("dev"));
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////Setup routers/////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 app.use("/users", usersRouter);
 app.use("/paymentstatus", paymentStatusRouter);
@@ -56,11 +61,14 @@ app.use("/report", reportRouter);
 // Rota inicial
 app.get("/", (req: Request, res: Response) => {
   res.send(
-    "Welcome to Ecommerce API! Go to <strong><a href='/api-docs'>/api-docs</a></strong> to see the documentation",
+    "Welcome to E-commerce API! Go to <strong><a href='/api-docs'>/api-docs</a></strong> to see the documentation"
   );
 });
 
-// Iniciar o servidor
-const server = runServer(app, port, isDev);
+app.listen(port, () => {
+  if (isDev) {
+    console.log(`🚀 Server is running at http://localhost:${port} 🚀`);
+  }
+});
 
-export { server, app };
+export default app;

@@ -7,12 +7,14 @@
   "license": "MIT",
   "scripts": {
     "make-url": "ts-node src/utils/make-databaseurl.ts",
-    "build": "tsc && tsc-alias",
+    "add-build": "git add dist",
+    "build": "npm run seed && rimraf dist && tsc && tsc-alias",
     "vercel-build": "prisma generate && prisma migrate deploy && npm run build",
     "seed": "ts-node prisma/seeders/make-seed.ts",
     "watch": "tsc-watch --onSuccess \"npm run alias\"",
     "alias": "tsc-alias && npm run start",
-    "start": "node dist/src/main.js",
+    "start": "ts-node -r tsconfig-paths/register src/main.ts",
+    "ts.check": "tsc --project tsconfig.json",
     "start:dev": "nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register  src/main.ts' -e ts",
     "create-module": "ts-node src/utils/create-module.ts",
     "dev": "npm run watch",
@@ -23,6 +25,11 @@
     "test:staged": "npm run test --findRelatedTests",
     "test:push": "npm run test --coverage"
   },
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ],
   "dependencies": {
     "@prisma/client": "^5.15.1",
     "bcrypt": "^5.1.1",
@@ -54,7 +61,9 @@
     "@types/shelljs": "^0.8.15",
     "@types/supertest": "^6.0.2",
     "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-dist": "^3.30.5",
     "@types/swagger-ui-express": "^4.1.6",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "globals": "^15.6.0",

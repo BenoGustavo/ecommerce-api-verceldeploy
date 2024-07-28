@@ -1,6 +1,6 @@
 import request from 'supertest';
-import { app, server } from '@/main';
-import { Prisma, PrismaClient, User } from '@prisma/client';
+import app from '@/main';
+import { PrismaClient, User } from '@prisma/client';
 import { exec } from 'child_process';
 import bcrypt from "bcrypt";
 import util from 'util';
@@ -100,7 +100,6 @@ describe("User API", () => {
 
     afterAll(async () => {
         await prisma.$disconnect();
-        server.close();
     });
 
     it("Should get forbidden when getting a user by id without authentication", async () => {

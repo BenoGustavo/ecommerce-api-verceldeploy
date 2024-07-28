@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { app, server } from '@/main';
+import app from '@/main';
 import { PrismaClient, User } from '@prisma/client';
 import { exec } from 'child_process';
 import util from 'util';
@@ -73,7 +73,6 @@ describe('Order API', () => {
     });
 
     afterAll(async () => {
-        server.close();
         await prisma.$disconnect();
     });
 

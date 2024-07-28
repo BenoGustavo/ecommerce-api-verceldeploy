@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { app, server } from '@/main';
+import app from '@/main';
 import { PrismaClient } from '@prisma/client';
 import { exec } from 'child_process';
 import util from 'util';
@@ -21,7 +21,6 @@ describe("product API", () => {
 
   afterAll(async () => {
     await prisma.$disconnect();
-    server.close();
   });
 
   it("should get 404 when getting a product by id that don't exits", async () => {
