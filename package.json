@@ -8,7 +8,7 @@
   "scripts": {
     "make-url": "ts-node src/utils/make-databaseurl.ts",
     "add-build": "git add dist",
-    "build": "npm run seed && rimraf dist && tsc && tsc-alias",
+    "build": "rimraf dist && tsc && tsc-alias",
     "vercel-build": "prisma generate && prisma migrate deploy && npm run build",
     "seed": "ts-node prisma/seeders/make-seed.ts",
     "watch": "tsc-watch --onSuccess \"npm run alias\"",
